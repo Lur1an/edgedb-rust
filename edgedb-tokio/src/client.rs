@@ -12,12 +12,13 @@ use tokio::time::sleep;
 use crate::builder::Config;
 use crate::errors::{Error, ErrorKind, SHOULD_RETRY};
 use crate::errors::{NoDataError, NoResultExpected, ProtocolEncodingError};
+use crate::manual_transaction::{start_transaction, ManualTransaction};
 use crate::options::{RetryOptions, TransactionOptions};
 use crate::raw::{Options, PoolState};
 use crate::raw::{Pool, QueryCapabilities};
 use crate::state::{AliasesDelta, ConfigDelta, GlobalsDelta};
 use crate::state::{AliasesModifier, ConfigModifier, Fn, GlobalsModifier};
-use crate::transaction::{transaction, ScopedTransaction};
+use crate::transaction::{within_transaction, ScopedTransaction};
 
 /// The EdgeDB Client.
 ///
@@ -504,12 +505,12 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn transaction<T, B, F>(&self, body: B) -> Result<T, Error>
+    pub async fn within_transaction<T, B, F>(&self, body: B) -> Result<T, Error>
     where
         B: FnMut(ScopedTransaction) -> F,
         F: Future<Output = Result<T, Error>>,
     {
-        transaction(&self.pool, &self.options, body).await
+        within_transaction(&self.pool, &self.options, body).await
     }
 
     /// Returns client with adjusted options for future transactions.
@@ -530,6 +531,9 @@ impl Client {
             }),
             pool: self.pool.clone(),
         }
+    }
+    pub async fn start_transaction(&self) -> Result<ManualTransaction, Error> {
+        start_transaction(&self.pool).await
     }
     /// Returns client with adjusted options for future retrying
     /// transactions.

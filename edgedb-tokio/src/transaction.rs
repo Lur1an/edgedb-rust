@@ -54,7 +54,7 @@ impl Drop for ScopedTransaction {
     }
 }
 
-pub(crate) async fn transaction<T, B, F>(
+pub(crate) async fn within_transaction<T, B, F>(
     pool: &Pool,
     options: &Options,
     mut body: B,

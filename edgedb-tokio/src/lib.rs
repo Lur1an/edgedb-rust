@@ -132,6 +132,7 @@ mod tls;
 mod builder;
 mod client;
 mod errors;
+mod manual_transaction;
 mod options;
 mod sealed;
 pub mod state;
