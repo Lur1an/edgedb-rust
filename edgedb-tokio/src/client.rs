@@ -17,7 +17,7 @@ use crate::raw::{Options, PoolState};
 use crate::raw::{Pool, QueryCapabilities};
 use crate::state::{AliasesDelta, ConfigDelta, GlobalsDelta};
 use crate::state::{AliasesModifier, ConfigModifier, Fn, GlobalsModifier};
-use crate::transaction::{transaction, Transaction};
+use crate::transaction::{transaction, ScopedTransaction};
 
 /// The EdgeDB Client.
 ///
@@ -506,7 +506,7 @@ impl Client {
     /// ```
     pub async fn transaction<T, B, F>(&self, body: B) -> Result<T, Error>
     where
-        B: FnMut(Transaction) -> F,
+        B: FnMut(ScopedTransaction) -> F,
         F: Future<Output = Result<T, Error>>,
     {
         transaction(&self.pool, &self.options, body).await

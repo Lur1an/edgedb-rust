@@ -23,7 +23,7 @@ use crate::raw::{Options, Pool, PoolConnection, PoolState};
 /// All database queries in transaction should be executed using methods on
 /// this object instead of using original [`Client`](crate::Client) instance.
 #[derive(Debug)]
-pub struct Transaction {
+pub struct ScopedTransaction {
     iteration: u32,
     state: Arc<PoolState>,
     inner: Option<Inner>,
@@ -42,7 +42,7 @@ pub struct Inner {
     return_conn: oneshot::Sender<TransactionResult>,
 }
 
-impl Drop for Transaction {
+impl Drop for ScopedTransaction {
     fn drop(&mut self) {
         self.inner.take().map(
             |Inner {
@@ -60,14 +60,14 @@ pub(crate) async fn transaction<T, B, F>(
     mut body: B,
 ) -> Result<T, Error>
 where
-    B: FnMut(Transaction) -> F,
+    B: FnMut(ScopedTransaction) -> F,
     F: Future<Output = Result<T, Error>>,
 {
     let mut iteration = 0;
     'transaction: loop {
         let conn = pool.acquire().await?;
         let (tx, mut rx) = oneshot::channel();
-        let tran = Transaction {
+        let tran = ScopedTransaction {
             iteration,
             state: options.state.clone(),
             inner: Some(Inner {
@@ -124,7 +124,7 @@ where
     }
 }
 
-impl Transaction {
+impl ScopedTransaction {
     /// Zero-based iteration (attempt) number for the current transaction
     ///
     /// First attempt gets `iteration = 0`, second attempt `iteration = 1`,

@@ -4,7 +4,7 @@ use std::sync::Arc;
 use tokio::sync::Mutex;
 
 use edgedb_errors::NoDataError;
-use edgedb_tokio::{Client, Transaction};
+use edgedb_tokio::{Client, ScopedTransaction};
 
 use crate::server::SERVER;
 
@@ -89,7 +89,7 @@ async fn transaction_conflict() -> anyhow::Result<()> {
     Ok(())
 }
 
-async fn get_counter_value(tx: &mut Transaction, name: &str) -> anyhow::Result<i32> {
+async fn get_counter_value(tx: &mut ScopedTransaction, name: &str) -> anyhow::Result<i32> {
     let value = tx
         .query_required_single(
             "

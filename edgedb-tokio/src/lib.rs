@@ -146,7 +146,7 @@ pub use credentials::TlsSecurity;
 pub use errors::Error;
 pub use options::{RetryCondition, RetryOptions, TransactionOptions};
 pub use state::{ConfigDelta, GlobalsDelta};
-pub use transaction::Transaction;
+pub use transaction::ScopedTransaction;
 
 #[cfg(feature = "unstable")]
 pub use builder::get_project_dir;
