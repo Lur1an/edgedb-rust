@@ -533,7 +533,7 @@ impl Client {
         }
     }
     pub async fn start_transaction(&self) -> Result<ManualTransaction, Error> {
-        start_transaction(&self.pool).await
+        start_transaction(&self.pool, &self.options).await
     }
     /// Returns client with adjusted options for future retrying
     /// transactions.
