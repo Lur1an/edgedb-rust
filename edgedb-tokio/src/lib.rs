@@ -145,6 +145,7 @@ pub use builder::{Builder, ClientSecurity, Config, InstanceName, TcpKeepalive};
 pub use client::Client;
 pub use credentials::TlsSecurity;
 pub use errors::Error;
+pub use manual_transaction::ManualTransaction;
 pub use options::{RetryCondition, RetryOptions, TransactionOptions};
 pub use state::{ConfigDelta, GlobalsDelta};
 pub use transaction::ScopedTransaction;

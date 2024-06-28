@@ -11,6 +11,9 @@ mod client;
 mod transactions;
 
 #[cfg(not(windows))]
+mod manual_transactions;
+
+#[cfg(not(windows))]
 mod globals;
 
 #[cfg(not(windows))]
